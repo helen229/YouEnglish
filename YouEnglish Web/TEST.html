@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <body>
+
+    <div id="widget-1"></div>
+
+    <script>
+      // 2. This code loads the widget API code asynchronously.
+      var tag = document.createElement('script');
+
+      tag.src = "https://youglish.com/public/emb/widget.js";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      // 3. This function creates a widget after the API code downloads.
+      var widget;
+      function onYouglishAPIReady(){
+        widget = new YG.Widget("widget-1", {
+          width: 640,
+          components:9, //search box & caption 
+          events: {
+            'onSearchDone': onSearchDone,
+            'onVideoChange': onVideoChange,
+            'onCaptionConsumed': onCaptionConsumed
+          }          
+        });
+        // 4. process the query
+        var lines =localStorage.getItem("storageName");
+        word = lines.split(',');
+        var x = Math.floor((Math.random() * word.length));
+        // console.log(x);
+        widget.search(word[x],"US");
+      }
+
+     
+      var views = 0, curTrack = 0, totalTracks = 0, num=0, word=["null"];
+    
+      // 5. The API will call this method when the search is done
+      function onSearchDone(event){
+        if (event.totalResult === 0)   alert("No result found");
+        else totalTracks = event.totalResult; 
+      }
+         
+      // 6. The API will call this method when switching to a new video. 
+      function onVideoChange(event){
+        curTrack = event.trackNumber;
+        views = 0;
+      }
+         
+      // 7. The API will call this method when a caption is consumed. 
+      function onCaptionConsumed(event){
+        setTimeout(CaptionConsumed, 8000);
+      }
+       
+      function CaptionConsumed(){
+        if (++views < 3){ 
+          widget.replay();
+        } else if (curTrack <12)
+        {
+          widget.next();
+        }else{
+          // widget.pause();
+          Diction();
+        }
+      }
+
+      function Diction(){
+        console.log(word[num]);
+        widget.search(word[num],"US");
+        num++;
+      }
+  </script>
+  </body>
+</html>
+
+
+
+
